@@ -1,3 +1,4 @@
+
 name: Build workflow
 
 on:
@@ -7,31 +8,68 @@ on:
 
 jobs:
   lk-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
-    - name: Checkout sources
-      uses: actions/checkout@v3
-    - name: Install pyhton2
-      run: sudo apt-get install python2
-    - name: Cache GCC for Android
-      id: cache-gcc
-      uses: actions/cache@v3
-      with:
-        path: ~/gcc-toolchain
-        key: gcc-toolchain
-    - name: Download GCC for Android
-      if: steps.cache-gcc.outputs.cache-hit != 'true'
-      run: |
-        git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 ~/gcc-toolchain
-        cd ~/gcc-toolchain
-        git checkout e9b2ab0932573a0ca90cad11ab75d9619f19c458
-    - name: Build the bootloader
-      run: |
-        export python=python2
-        MTK_PROJECT=X5 PRELOADER_OUT=`pwd`/build-X5 CROSS_COMPILE=~/gcc-toolchain/bin/arm-linux-androideabi- make
-    - name : Upload bootloader
-      uses: actions/upload-artifact@v4
-      with:
-        name: preloader_X5
-        path: /home/runner/work/preloader/preloader/build-X5/bin/preloader_X5.bin
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Set up Python 2.7
+        uses: actions/setup-python@v5
+        with:
+          python-version: 'pypy2.7'
+
+      - name: Verify Python
+        run: |
+          python --version
+          python -c "import sys; print(sys.version)"
+          command -v python
+
+      - name: Cache GCC for Android
+        id: cache-gcc
+        uses: actions/cache@v4
+        with:
+          path: ~/gcc-toolchain
+          key: gcc-toolchain-e9b2ab0932573a0ca90cad11ab75d9619f19c458
+
+      - name: Download GCC for Android
+        if: steps.cache-gcc.outputs.cache-hit != 'true'
+        run: |
+          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 "$HOME/gcc-toolchain"
+          cd "$HOME/gcc-toolchain"
+          git checkout e9b2ab0932573a0ca90cad11ab75d9619f19c458
+
+      - name: Verify GCC
+        run: |
+          "$HOME/gcc-toolchain/bin/arm-linux-androideabi-gcc" --version
+
+      - name: Build the bootloader
+        shell: bash
+        run: |
+          set -eo pipefail
+
+          export PATH="$HOME/gcc-toolchain/bin:$PATH"
+          export python="$(command -v python)"
+
+          export MTK_PROJECT=X5
+          export PRELOADER_OUT="$GITHUB_WORKSPACE/build-X5"
+          export CROSS_COMPILE="$HOME/gcc-toolchain/bin/arm-linux-androideabi-"
+
+          make
+
+      - name: Verify build output
+        run: |
+          echo "Checking build output..."
+          find build-X5 -type f -name 'preloader_X5.bin' -print
+
+          if [ ! -f build-X5/bin/preloader_X5.bin ]; then
+            echo "::error::preloader_X5.bin was not generated at the expected path."
+            exit 1
+          fi
+
+      - name: Upload bootloader
+        uses: actions/upload-artifact@v4
+        with:
+          name: preloader_X5
+          path: build-X5/bin/preloader_X5.bin
+          if-no-files-found: error
