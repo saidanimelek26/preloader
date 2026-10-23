@@ -31,7 +31,7 @@ jobs:
         export python=python2
         MTK_PROJECT=X5 PRELOADER_OUT=`pwd`/build-X5 CROSS_COMPILE=~/gcc-toolchain/bin/arm-linux-androideabi- make
     - name : Upload bootloader
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: preloader_X5
         path: /home/runner/work/preloader/preloader/build-X5/bin/preloader_X5.bin
