@@ -1345,29 +1345,25 @@ sub check_dram_rank_size_by_EMI_settings {
 # return:      void
 #****************************************************************************************
 sub check_cbt_mode {
-	use Switch;
-
 	my $dev = shift;
 
-	switch ($dev->data('DEV_MODE')) {
-		case "R0_NORMAL+R1_NORMAL" {
-				$dev->cbt_mode('enum', "CBT_R0_R1_NORMAL");
-				$dev->cbt_mode('id', "0");
-			}
-		case "R0_BYTE+R1_BYTE" {
-				$dev->cbt_mode('enum', "CBT_R0_R1_BYTE");
-				$dev->cbt_mode('id', "1");
-			}
-		case "R0_NORMAL+R1_BYTE" {
-				$dev->cbt_mode('enum', "CBT_R0_NORMAL_R1_BYTE");
-				$dev->cbt_mode('id', "2");
-			}
-		case "R0_BYTE+R1_NORMAL" {
-				$dev->cbt_mode('enum', "CBT_R0_BYTE_R1_NORMAL");
-				$dev->cbt_mode('id', "3");
-			} else {
-				die "[Error]Wrong Mode !!!\n";
-			}
+	my $mode = $dev->data('DEV_MODE');
+	$mode = '' unless (defined $mode);
+
+	if ($mode eq "R0_NORMAL+R1_NORMAL") {
+		$dev->cbt_mode('enum', "CBT_R0_R1_NORMAL");
+		$dev->cbt_mode('id', "0");
+	} elsif ($mode eq "R0_BYTE+R1_BYTE") {
+		$dev->cbt_mode('enum', "CBT_R0_R1_BYTE");
+		$dev->cbt_mode('id', "1");
+	} elsif ($mode eq "R0_NORMAL+R1_BYTE") {
+		$dev->cbt_mode('enum', "CBT_R0_NORMAL_R1_BYTE");
+		$dev->cbt_mode('id', "2");
+	} elsif ($mode eq "R0_BYTE+R1_NORMAL") {
+		$dev->cbt_mode('enum', "CBT_R0_BYTE_R1_NORMAL");
+		$dev->cbt_mode('id', "3");
+	} else {
+		die "[Error]Wrong Mode !!!\n";
 	}
 }
 
