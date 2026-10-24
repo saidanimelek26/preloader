@@ -60,6 +60,11 @@
 #define KPD_PWRKEY_MAP    KEY_POWER
 #define MTK_PMIC_PWR_KEY    8
 
+/* realme C21 (RMX3201) stock preloader: PMIC reset/home key is HW keycode 17.
+ * Stock log: "pmic_detect_homekey MTK_PMIC_RST_KEY = 17" during the
+ * UART dynamic-switch check, so KPD_DL_KEY1 must resolve to key 17 there. */
+#define MTK_PMIC_RST_KEY    17
+
 #define KPD_USE_EXTEND_TYPE   KPD_NO
 
 /* HW keycode [0 ~ 71] -> Linux keycode */
@@ -75,7 +80,7 @@
 
 #define KPD_PWRKEY_GPIO_DIN  0
 
-#define KPD_DL_KEY1  0    /* KEY_VOLUMEUP */
+#define KPD_DL_KEY1  17   /* PMIC reset/home key (stock C21 value) */
 #define KPD_DL_KEY2  9    /* KEY_VOLUMEDOWN */
 #define  KPD_DL_KEY3  8    /* KEY_POWER */
 /*****************************************************************/
