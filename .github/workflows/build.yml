@@ -51,8 +51,8 @@ jobs:
           export PATH="$HOME/gcc-toolchain/bin:$PATH"
           export python="$(command -v python)"
 
-          export MTK_PROJECT=X5
-          export PRELOADER_OUT="$GITHUB_WORKSPACE/build-X5"
+          export MTK_PROJECT=k65v1_64_bsp
+          export PRELOADER_OUT="$GITHUB_WORKSPACE/build-k65v1_64_bsp"
           export CROSS_COMPILE="$HOME/gcc-toolchain/bin/arm-linux-androideabi-"
 
           make
@@ -60,16 +60,16 @@ jobs:
       - name: Verify build output
         run: |
           echo "Checking build output..."
-          find build-X5 -type f -name 'preloader_X5.bin' -print
+          find build-k65v1_64_bsp -type f -name 'preloader_k65v1_64_bsp.bin' -print
 
-          if [ ! -f build-X5/bin/preloader_X5.bin ]; then
-            echo "::error::preloader_X5.bin was not generated at the expected path."
+          if [ ! -f build-k65v1_64_bsp/bin/preloader_k65v1_64_bsp.bin ]; then
+            echo "::error::preloader_k65v1_64_bsp.bin was not generated at the expected path."
             exit 1
           fi
 
       - name: Upload bootloader
         uses: actions/upload-artifact@v4
         with:
-          name: preloader_X5
-          path: build-X5/bin/preloader_X5.bin
+          name: preloader_k65v1_64_bsp
+          path: build-k65v1_64_bsp/bin/preloader_k65v1_64_bsp.bin
           if-no-files-found: error
