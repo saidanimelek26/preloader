@@ -1,4 +1,3 @@
-
 name: Build workflow
 
 on:
@@ -14,16 +13,21 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
-      - name: Set up Python 2.7
-        uses: actions/setup-python@v5
-        with:
-          python-version: 'pypy2.7'
-
-      - name: Verify Python
+      - name: Set up Python 2.7 (CPython)
         run: |
+          sudo apt-get update
+          sudo apt-get install -y python2
+          sudo ln -sf /usr/bin/python2 /usr/local/bin/python
           python --version
           python -c "import sys; print(sys.version)"
           command -v python
+
+      - name: Verify PBP signing library
+        run: |
+          ls -l tools/pbp/lib
+          cd tools/pbp
+          python -c "import lib; print('lib ->', lib.__file__)"
+          python -c "import lib.gfh, lib.cert; print('PBP lib OK')"
 
       - name: Cache GCC for Android
         id: cache-gcc
