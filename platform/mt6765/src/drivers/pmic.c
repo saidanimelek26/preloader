@@ -7,7 +7,7 @@
 #include <sec_devinfo.h>
 #include <rtc.h>
 
-/*#define	EXTERNAL_BUCK_RT5738	1*/
+#define	EXTBUCK_RT5738	1
 #if defined(EXTERNAL_BUCK_RT5738)
 #include <rt5738.h>
 #endif
